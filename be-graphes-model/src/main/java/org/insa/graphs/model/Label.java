@@ -1,6 +1,6 @@
 package org.insa.graphs.model;
 
-public class Label {
+public class Label implements Comparable<Label>{
 	
 	public Node sommet; //sommet associé à ce label.
 	public boolean marque ; // vrai lorsque le coût min de ce sommet est définitivement connu par l'algorithme
@@ -22,5 +22,11 @@ public class Label {
     public Node getSommet() {
     	return sommet;
     }
+
+	@Override
+	public int compareTo(Label o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
     
     }

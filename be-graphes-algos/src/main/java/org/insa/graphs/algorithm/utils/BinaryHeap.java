@@ -86,7 +86,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     /**
      * Internal method to percolate down in the heap.
-     * 
+     * x ExtractMin(Tas)
      * @param index Index at which the percolate begins.
      */
     private void percolateDown(int index) {
@@ -121,6 +121,10 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     @Override
     public boolean isEmpty() {
         return this.currentSize == 0;
+    }
+    
+    public ArrayList<E> getArray() {
+    	return this.array;
     }
 
     @Override
