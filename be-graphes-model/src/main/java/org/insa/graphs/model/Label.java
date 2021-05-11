@@ -1,13 +1,14 @@
-package org.insa.graphs.algorithm.shortestpath;
+package org.insa.graphs.model;
 
-public class Label extends ShortestPathAlgorithm {
+public class Label {
 	
 	public Node sommet; //sommet associé à ce label.
 	public boolean marque ; // vrai lorsque le coût min de ce sommet est définitivement connu par l'algorithme
 	public float cout; //valeur courante du plus court chemin depuis l'origine vers le sommet.
-	public arc pere; //correspond au sommet précédent sur le chemin correspondant au plus court chemin courant.
+	public Arc pere; //correspond au sommet précédent sur le chemin correspondant au plus court chemin courant.
 	
-    public Label(int sommet, boolean marque, float cout, arc pere) {
+	
+    public Label(Node sommet, boolean marque, float cout, Arc pere) {
         this.sommet = sommet;
         this.marque = marque;
         this.cout = cout;
@@ -18,5 +19,8 @@ public class Label extends ShortestPathAlgorithm {
     	return cout;
     }
     
+    public Node getSommet() {
+    	return sommet;
+    }
     
     }
