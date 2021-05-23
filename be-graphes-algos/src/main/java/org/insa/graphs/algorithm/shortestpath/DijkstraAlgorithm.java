@@ -25,60 +25,67 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         // Declarations
         ArrayList<Label> toutLabels = new ArrayList<Label>(); //Ensemble des labels
-        Label labelCourant = null;
-        float floatBasCout = Float.MAX_VALUE;
+        Label labelCourant = null; 
         BinaryHeap<Label> pile = new BinaryHeap<Label>();
+     
+        
         boolean trouve = false;
-        ArrayList<Arc> solutionArcs= new ArrayList<Arc>(); 
+        ArrayList<Arc> solutionArcs= new ArrayList<Arc>();
         
         
         // Initialisation des labels
         
         for(Node node : data.getGraph().getNodes()) {
-        	toutLabels.add( new Label(node, false, Float.MAX_VALUE, null));
+        	toutLabels.add( new Label(node, false, Double.MAX_VALUE, null));
         }
         
-        //insertion du premiere label
-        pile.insert(toutLabels.get(0));
+        //insertion du premiere label 
         
-        //
-        
-        while(!trouve){
+        	Label label =  toutLabels.get(data.getOrigin().getId()); 
+        	label.marque = true;
+        	label.cout = 0;
+        	pile.insert(label);
+        	notifyOriginProcessed(label.getSommet());
+               
+        while(!trouve && !pile.isEmpty()){
         	labelCourant = pile.deleteMin();
         	labelCourant.marque = true;
+        	notifyNodeMarked(labelCourant.getSommet());
         	
         	//Comparer et eventuellement changer le cout de tout les succs de labelCourant
         	for(Arc arc : labelCourant.getSommet().getSuccessors()) {
         		Label suc = toutLabels.get(arc.getDestination().getId());
-            	if(!suc.marque || ((arc.getLength() + labelCourant.cout) < suc.cout)) {
-            		suc.cout = arc.getLength() + labelCourant.getCost();
-            		suc.pere = arc;
-            		for(Label label : pile.getArray()) { //verification si le suc est deja dans le pil
-            			if (label.sommet == suc.sommet) {
-            				pile.remove(toutLabels.get(arc.getDestination().getId()));
-            				break;
-            			}
+            	if(!suc.marque && ((data.getCost(arc) + labelCourant.getCost()) < suc.getCost())) {
+            		if (suc.pere != null){
+            			pile.remove(suc);
+            		} else { //premiere fois qu'on viste le node
+            			notifyNodeReached(suc.getSommet());
             		}
-            		pile.insert(suc);
-            		if (suc.sommet == data.getDestination()) {
-            			labelCourant = suc; //Pour trouver le chemin final
-            			trouve = true;
-            		}
+            		suc.cout = data.getCost(arc) + labelCourant.getCost();
+            		suc.pere = arc;           		
+            		pile.insert(suc);            		
             	}
             }
-        	
+        	if (labelCourant.sommet == data.getDestination()) {
+    			trouve = true;
+    			notifyDestinationReached(labelCourant.getSommet());
+    		}
         }
         
-        //Trouver le chemin finale 
-        while(labelCourant.pere != null) {
-        	System.out.println(labelCourant.sommet.getId());
-        	solutionArcs.add(labelCourant.pere);
-        	labelCourant = toutLabels.get(labelCourant.pere.getOrigin().getId());
-        }
+        //Trouver le chemin finale !trouve
         
-        Collections.reverse(solutionArcs);
-        solution = new ShortestPathSolution(data,Status.OPTIMAL, new Path(data.getGraph(), solutionArcs));
+        if (trouve){ //on a trouve le chemin  
+        	while(labelCourant.pere != null) {
+        		solutionArcs.add(labelCourant.pere);
+        		labelCourant = toutLabels.get(labelCourant.pere.getOrigin().getId());       		      
+        	}
+        	Collections.reverse(solutionArcs);
+            solution = new ShortestPathSolution(data,Status.OPTIMAL, new Path(data.getGraph(), solutionArcs)); 
+        } else  { //IL n'existe pas un chemin 
+        	solution = new ShortestPathSolution(data,Status.INFEASIBLE, new Path(data.getGraph(), solutionArcs));           
+        
+        }
         return solution;
     }
-
 }
+
