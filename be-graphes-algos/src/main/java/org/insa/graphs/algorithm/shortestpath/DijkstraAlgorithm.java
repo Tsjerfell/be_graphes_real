@@ -3,10 +3,8 @@ import org.insa.graphs.model.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.insa.graphs.algorithm.utils.*;
-import org.insa.graphs.algorithm.AbstractAlgorithm;
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 
 
@@ -16,7 +14,17 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
     }
-
+    
+    // Initialisation des labels
+    protected ArrayList<Label> intizialiseList(ShortestPathData data){
+    	ArrayList<Label> toutLabels = new ArrayList<Label>();
+    	for(Node node : data.getGraph().getNodes()) {
+    		toutLabels.add( new Label(node, false, Double.MAX_VALUE, null));
+    	}
+    	
+    return toutLabels;
+    }
+    
     @Override
     protected ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
@@ -27,18 +35,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         ArrayList<Label> toutLabels = new ArrayList<Label>(); //Ensemble des labels
         Label labelCourant = null; 
         BinaryHeap<Label> pile = new BinaryHeap<Label>();
-     
         
         boolean trouve = false;
         ArrayList<Arc> solutionArcs= new ArrayList<Arc>();
-        
-        
-        // Initialisation des labels
-        
-        for(Node node : data.getGraph().getNodes()) {
-        	toutLabels.add( new Label(node, false, Double.MAX_VALUE, null));
-        }
-        
+       
+        toutLabels = intizialiseList(data);
         //insertion du premiere label 
         
         	Label label =  toutLabels.get(data.getOrigin().getId()); 
@@ -56,7 +57,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	for(Arc arc : labelCourant.getSommet().getSuccessors()) {
         		Label suc = toutLabels.get(arc.getDestination().getId());
             	if(!suc.marque && ((data.getCost(arc) + labelCourant.getCost()) < suc.getCost())) {
-            		if (suc.pere != null){
+            		if (suc.pere != null){ 
             			pile.remove(suc);
             		} else { //premiere fois qu'on viste le node
             			notifyNodeReached(suc.getSommet());
@@ -66,14 +67,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             		pile.insert(suc);            		
             	}
             }
-        	if (labelCourant.sommet == data.getDestination()) {
+        	if (labelCourant.sommet == data.getDestination()) {// on test si on est dans le destination, si c'est le cas, on termine
     			trouve = true;
     			notifyDestinationReached(labelCourant.getSommet());
     		}
         }
         
-        //Trouver le chemin finale !trouve
-        
+        //Trouve le chemin finale / dit qu'il nexiste pas un chemin        
         if (trouve){ //on a trouve le chemin  
         	while(labelCourant.pere != null) {
         		solutionArcs.add(labelCourant.pere);
@@ -81,7 +81,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	}
         	Collections.reverse(solutionArcs);
             solution = new ShortestPathSolution(data,Status.OPTIMAL, new Path(data.getGraph(), solutionArcs)); 
-        } else  { //IL n'existe pas un chemin 
+        } else  { //Il n'existe pas un chemin 
         	solution = new ShortestPathSolution(data,Status.INFEASIBLE, new Path(data.getGraph(), solutionArcs));           
         
         }

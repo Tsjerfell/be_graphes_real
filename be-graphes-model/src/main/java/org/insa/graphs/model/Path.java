@@ -278,9 +278,12 @@ public class Path {
     
     public double getMinimumTravelTime() {
         double totalMinimumTravelTime = 0;
+        if (this.size() == 0){   		
+    	} else {
         for (Arc chemin: arcs) {
         	totalMinimumTravelTime += chemin.getMinimumTravelTime();
         }
+        }        
         return totalMinimumTravelTime;
     }
     

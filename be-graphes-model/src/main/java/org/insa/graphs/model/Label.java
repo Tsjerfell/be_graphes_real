@@ -22,13 +22,21 @@ public class Label implements Comparable<Label>{
     public Node getSommet() {
     	return sommet;
     }
+    
+    public double getTotalCost() {
+    	return cout;
+    }
+    
+    public double getCoutEstime() {
+		return 0;
+	}
 
 	@Override
 	public int compareTo(Label autre) {
 		int returnvalue;
-		if (autre.getCost() > this.getCost()){
+		if (autre.getTotalCost() > this.getTotalCost()){
 			returnvalue = -1;
-		} else if (autre.getCost() == this.getCost()) {
+		} else if (autre.getTotalCost() == this.getTotalCost()) {
 			returnvalue = 0;
 		} else {
 			returnvalue = 1;
